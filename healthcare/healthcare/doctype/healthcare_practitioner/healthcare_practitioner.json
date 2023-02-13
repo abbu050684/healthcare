@@ -3,7 +3,6 @@
  "allow_import": 1,
  "allow_rename": 1,
  "autoname": "naming_series:",
- "beta": 0,
  "creation": "2016-02-23 11:20:53.565119",
  "doctype": "DocType",
  "document_type": "Setup",
@@ -32,6 +31,7 @@
   "appointments",
   "practitioner_schedules",
   "google_calendar",
+  "show_in_website",
   "charges",
   "op_consulting_charge_item",
   "op_consulting_charge",
@@ -286,11 +286,17 @@
    "fieldtype": "Link",
    "label": "Google Calendar",
    "options": "Google Calendar"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_website",
+   "fieldtype": "Check",
+   "label": "Show Availability in Website"
   }
  ],
  "image_field": "image",
  "links": [],
- "modified": "2022-06-15 08:01:05.614211",
+ "modified": "2023-03-15 12:20:36.616754",
  "modified_by": "Administrator",
  "module": "Healthcare",
  "name": "Healthcare Practitioner",
