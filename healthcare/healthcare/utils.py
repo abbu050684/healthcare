@@ -702,23 +702,25 @@ def get_children(doctype, parent=None, company=None, is_root=False):
 
 	service_units = frappe.get_list(doctype, fields=fields, filters=filters)
 	for each in service_units:
-		if each["expandable"] == 1:  # group node
-			available_count = frappe.db.count(
-				"Healthcare Service Unit",
-				filters={"parent_healthcare_service_unit": each["value"], "inpatient_occupancy": 1},
-			)
+		if each["expandable"] != 1 or each["value"].startswith("All Healthcare Service Units"):
+			continue
 
-			if available_count > 0:
-				occupied_count = frappe.db.count(
-					"Healthcare Service Unit",
-					{
-						"parent_healthcare_service_unit": each["value"],
-						"inpatient_occupancy": 1,
-						"occupancy_status": "Occupied",
-					},
-				)
-				# set occupancy status of group node
-				each["occupied_of_available"] = str(occupied_count) + " Occupied of " + str(available_count)
+		available_count = frappe.db.count(
+			"Healthcare Service Unit",
+			filters={"parent_healthcare_service_unit": each["value"], "inpatient_occupancy": 1},
+		)
+
+		if available_count > 0:
+			occupied_count = frappe.db.count(
+				"Healthcare Service Unit",
+				filters={
+					"parent_healthcare_service_unit": each["value"],
+					"inpatient_occupancy": 1,
+					"occupancy_status": "Occupied",
+				},
+			)
+			# set occupancy status of group node
+			each["occupied_of_available"] = f"{str(occupied_count)} Occupied of {str(available_count)}"
 
 	return service_units
 
@@ -955,6 +957,8 @@ def before_tests():
 	# complete setup if missing
 	from frappe.desk.page.setup_wizard.setup_wizard import setup_complete
 
+	current_year = frappe.utils.now_datetime().year
+
 	if not frappe.get_list("Company"):
 		setup_complete(
 			{
@@ -965,8 +969,8 @@ def before_tests():
 				"company_abbr": "WP",
 				"industry": "Healthcare",
 				"country": "United States",
-				"fy_start_date": "2022-04-01",
-				"fy_end_date": "2023-03-31",
+				"fy_start_date": f"{current_year}-01-01",
+				"fy_end_date": f"{current_year}-12-31",
 				"language": "english",
 				"company_tagline": "Testing",
 				"email": "test@erpnext.com",
